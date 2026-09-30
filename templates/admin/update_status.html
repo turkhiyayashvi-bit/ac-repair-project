@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Job Status - AC PCB Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger-red: #ef4444;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 1. SIDEBAR STRUCTURE */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 14px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .sidebar h2 {
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-main);
+            padding: 0 12px 24px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar h2::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--tech-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--tech-cyan);
+        }
+
+        .sidebar .menu-category {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--tech-blue);
+            letter-spacing: 1px;
+            padding: 16px 12px 6px 12px;
+            user-select: none;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            margin: 2px 0;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+        .sidebar a i {
+            margin-right: 12px;
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--tech-cyan);
+            padding-left: 18px;
+        }
+        .sidebar a.active {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--tech-cyan);
+            font-weight: 600;
+            border-left: 4px solid var(--tech-cyan);
+        }
+
+        .sidebar .logout-btn {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .sidebar .logout-btn:hover { background-color: #ef4444; color: white; }
+
+        /* 2. MAIN WORKSPACE */
+        .main {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        /* GLASSMORPHISM FORM BOX */
+        .form-box {
+            background: var(--card-bg);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 35px 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 580px;
+            box-shadow: 0 0 35px rgba(37, 99, 235, 0.15), 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: var(--transition);
+        }
+
+        .form-box:hover {
+            border-color: var(--tech-cyan);
+            box-shadow: 0 0 45px rgba(0, 180, 216, 0.25), 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .form-box h3 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tech-cyan);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .job-details-badge {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .job-details-badge strong {
+            color: var(--text-main);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            color: var(--text-main);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2394a3b8'><path d='M0 3l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .form-group textarea {
+            resize: none;
+            height: 95px;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--tech-cyan);
+            background-color: rgba(15, 23, 42, 0.9);
+            box-shadow: 0 0 12px rgba(0, 180, 216, 0.25);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--tech-cyan), var(--tech-blue));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14.5px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+            transition: var(--transition);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.5);
+        }
+
+        .btn-cancel {
+            width: 30%;
+            padding: 13px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14.5px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; }
+            .sidebar h2, .sidebar .menu-category { display: none; }
+            .sidebar a span { display: none; }
+            .sidebar a i { margin-right: 0; font-size: 20px; }
+            .main { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- DYNAMIC COMPLIANT SIDEBAR -->
+<div class="sidebar">
+    <h2>AC PCB Admin</h2>
+    <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+    
+    <div class="menu-category">User Management</div>
+    <a href="{{ url_for('users') }}"><i class="fa-solid fa-users"></i> <span>Users</span></a>
+    <a href="{{ url_for('technicians') }}"><i class="fa-solid fa-user-gear"></i> <span>Technicians</span></a>
+    <a href="{{ url_for('technician_approval') }}"><i class="fa-solid fa-user-check"></i> <span>Tech Approval</span></a>
+    <a href="{{ url_for('staff_users') }}"><i class="fa-solid fa-user-shield"></i> <span>Staff Users</span></a>
+
+    <div class="menu-category">Core Masters</div>
+    <a href="{{ url_for('brands') }}"><i class="fa-solid fa-tags"></i> <span>Brands</span></a>
+    <a href="{{ url_for('ac_error_codes') }}"><i class="fa-solid fa-triangle-exclamation"></i> <span>AC Error Codes</span></a>
+    <a href="{{ url_for('pcb_companies') }}"><i class="fa-solid fa-industry"></i> <span>PCB Companies</span></a>
+    <a href="{{ url_for('pcb_models') }}"><i class="fa-solid fa-cubes"></i> <span>PCB Models</span></a>
+    <a href="{{ url_for('pcb_error_codes') }}"><i class="fa-solid fa-bolt"></i> <span>PCB Error Codes</span></a>
+
+    <div class="menu-category">Operations</div>
+    <a href="{{ url_for('repair_jobs') }}" class="active"><i class="fa-solid fa-wrench"></i> <span>Repair Jobs</span></a>
+
+    <div class="menu-category">Analytics</div>
+    <a href="{{ url_for('reports') }}"><i class="fa-solid fa-file-invoice-dollar"></i> <span>Reports & Analytics</span></a>
+
+    <div class="menu-category">System Controls</div>
+    <a href="{{ url_for('roles') }}"><i class="fa-solid fa-user-lock"></i> <span>Roles & Permissions</span></a>
+    <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
+    
+    <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fa-solid fa-power-off"></i> <span>Logout</span></a>
+</div>
+
+<!-- MAIN WORKSPACE -->
+<div class="main">
+    <div class="form-box">
+        <h3><i class="fa-solid fa-arrow-rotate-left"></i> Update Repair Status</h3>
+        
+        <div class="job-details-badge">
+            <span>Job ID: <strong>#{{ job.id }}</strong></span>
+            <span>|</span>
+            <span>AC Brand: <strong>{{ job.ac_brand }}</strong></span>
+        </div>
+        
+        <form action="/save_status/{{ job.id }}" method="POST">
+            <div class="form-group">
+                <label>Current Status</label>
+                <!-- MD Specified Enums -->
+                <select name="status">
+                    <option value="Received" {% if job.status == 'Received' %}selected{% endif %}>Received</option>
+                    <option value="Diagnosing" {% if job.status == 'Diagnosing' %}selected{% endif %}>Diagnosing</option>
+                    <option value="In Progress" {% if job.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                    <option value="Under Repair" {% if job.status == 'Under Repair' %}selected{% endif %}>Under Repair</option>
+                    <option value="Testing" {% if job.status == 'Testing' %}selected{% endif %}>Testing</option>
+                    <option value="Ready" {% if job.status == 'Ready' %}selected{% endif %}>Ready</option>
+                    <option value="Delivered" {% if job.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Status Update Note / Remarks</label>
+                <textarea name="note" placeholder="e.g. Capacitor replaced, shifting to testing department..."></textarea>
+            </div>
+
+            <div class="btn-container">
+                <a href="{{ url_for('repair_jobs') }}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-submit">Update & Save History</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

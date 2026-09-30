@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCB Models Catalog - AC PCB Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--main-bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        .navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-logo i { color: var(--tech-cyan); }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back:hover { color: var(--text-main); }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; width: 100%; }
+        .page-title { text-align: center; margin-bottom: 25px; }
+        .page-title h2 { font-size: 26px; color: var(--text-main); margin-bottom: 8px; }
+        .page-title p { color: var(--text-muted); font-size: 14px; }
+
+        .search-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .search-card input {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+        }
+        .search-card input:focus { border-color: var(--tech-cyan); }
+
+        .btn-search {
+            background: linear-gradient(135deg, var(--tech-cyan), var(--tech-blue));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        .btn-search:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .model-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            transition: var(--transition);
+        }
+
+        .model-card:hover {
+            border-color: var(--tech-cyan);
+            transform: translateY(-2px);
+        }
+
+        .company-tag {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--tech-cyan);
+            background: rgba(0, 180, 216, 0.12);
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .model-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .model-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); grid-column: 1 / -1; }
+        .empty-state i { font-size: 40px; margin-bottom: 12px; display: block; color: var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/user" class="brand-logo">
+            <i class="fa-solid fa-microchip"></i>
+            <span>AC PCB Service</span>
+        </a>
+        <a href="/user" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Home</a>
+    </nav>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>Supported PCB Models Catalog</h2>
+            <p>Search and explore inverter and non-inverter PCB models serviced at our lab</p>
+        </div>
+
+        <form method="GET" action="/user/pcb_models" class="search-card">
+            <input type="text" name="query" value="{{ request.args.get('query', '') }}" placeholder="Search by PCB Company (e.g. Daikin, Voltas) or Model Number...">
+            <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+
+        <div class="grid-layout">
+            {% if pcb_models %}
+                {% for model in pcb_models %}
+                    <div class="model-card">
+                        <span class="company-tag">{{ model.pcb_company or 'Universal PCB' }}</span>
+                        <div class="model-title">{{ model.model_name or model.pcb_model }}</div>
+                        <div class="model-desc">
+                            {% if model.board_type %}
+                                <strong>Type:</strong> {{ model.board_type }}<br>
+                            {% endif %}
+                            {% if model.description %}
+                                {{ model.description }}
+                            {% else %}
+                                Standard AC Control Circuit Board assembly.
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-cubes-stacked"></i>
+                    <p>No PCB models found matching your search term.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

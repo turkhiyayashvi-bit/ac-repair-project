@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Report — Premium Portal</title>
+    <style>
+        /* ==========================================================================
+           DESIGN SYSTEM VARIABLES (Matched with image_c088e4.jpg Dashboard Theme)
+           ========================================================================== */
+        :root {
+            --bg-color: #111e25;           /* Deep dark teal core background */
+            --accent-cyan: #00a8b5;        /* Vibrant cyan matching "+ Add Report" button */
+            --accent-hover: #008f9a;       /* Darker cyan tone for hover state feedback */
+            --card-bg: #1a2b32;            /* Slate teal container matching table rows */
+            --input-bg: #22373f;           /* Slightly lighter teal tint for interactive fields */
+            --text-main: #ffffff;          /* Crisp white for maximum contrast and readability */
+            --text-muted: #94a3b8;         /* Subdued slate for supporting descriptions */
+            --border-color: #2a3f47;       /* Soft interior structural lines */
+            --focus-glow: rgba(0, 168, 181, 0.25); /* Cyan neon drop-shadow halo effect */
+            --radius: 10px;                /* Consistent corporate border radius rounding */
+            --transition: all 0.25s ease-in-out; /* Smooth rendering for layout transitions */
+        }
+
+        /* ==========================================================================
+           BASE STYLES & RESET
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            /* Soft radial background flare to add luxury depth */
+            background-image: radial-gradient(circle at 80% 20%, #1a2f38 0%, var(--bg-color) 80%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ==========================================================================
+           PREMIUM CONTAINER CARD (SaaS Dashboard Aesthetics)
+           ========================================================================== */
+        .form-container {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 580px;
+            padding: 35px;
+            border-radius: var(--radius);
+            /* Layered shadow to simulate element elevation */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Top accent border emphasizing the corporate dashboard connection */
+        .form-header {
+            border-left: 4px solid var(--accent-cyan);
+            padding-left: 14px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-main);
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ==========================================================================
+           FORM INPUT CONTROLS & FIELDS
+           ========================================================================== */
+        .form-group {
+            margin-bottom: 22px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Unified dark mode responsive inputs */
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        /* Subtle interactive state on field proximity */
+        input[type="text"]:hover,
+        select:hover,
+        textarea:hover {
+            border-color: rgba(0, 168, 181, 0.5);
+        }
+
+        /* Active field illumination / ambient halo effect */
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 4px var(--focus-glow);
+            background-color: #243c45;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 110px;
+            line-height: 1.5;
+        }
+
+        /* Custom vector arrow integration for native dropdown select boxes */
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300a8b5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 14px;
+            padding-right: 45px;
+        }
+
+        /* ==========================================================================
+           INTERACTIVE CALL-TO-ACTION BUTTON
+           ========================================================================== */
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: var(--accent-cyan);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 168, 181, 0.2);
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        /* Fluid lift-up animation on dynamic cursor hover */
+        button[type="submit"]:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(0, 168, 181, 0.35);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           ERROR STATE VIEWPORT
+           ========================================================================== */
+        .error-card {
+            text-align: center;
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: var(--radius);
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Main Glassmorphism Presentation Layer Wrapper -->
+<div class="form-container">
+
+    <!-- Conditional Loop Check via Template Engine for Valid Data Records -->
+    {% if report %}
+    
+    <!-- Title Section Matching Corporate Standards -->
+    <div class="form-header">
+        <h2>Edit Report</h2>
+        <div class="subtitle">Modify report details and change assignment sync status.</div>
+    </div>
+
+    <!-- Data Form Action Handler -->
+    <form method="POST" action="{{ url_for('update_report', id=report.id) }}">
+
+        <!-- Input Field Container: Customer Verification -->
+        <div class="form-group">
+            <label for="customer_name">Customer Name</label>
+            <input type="text" id="customer_name" name="customer_name" value="{{ report.customer_name }}" required>
+        </div>
+
+        <!-- Input Field Container: Direct Contact Number -->
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone" value="{{ report.phone }}" required>
+        </div>
+
+        <!-- Dropdown Container: Dynamic Technician Allocation Loop -->
+        <div class="form-group">
+            <label for="technician_id">Technician</label>
+            <select id="technician_id" name="technician_id" required>
+                {% for t in technicians %}
+                    <option value="{{ t.id }}" {% if t.id == report.technician_id %}selected{% endif %}>
+                        {{ t.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Large Input Container: Multi-Line Narrative Complaint Details -->
+        <div class="form-group">
+            <label for="complaint">Complaint</label>
+            <textarea id="complaint" name="complaint" required>{{ report.complaint }}</textarea>
+        </div>
+
+        <!-- Dropdown Container: Job Status State Controller -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="Pending" {% if report.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="In Progress" {% if report.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                <option value="Completed" {% if report.status == 'Completed' %}selected{% endif %}>Completed</option>
+            </select>
+        </div>
+
+        <!-- Executive Form Submission Trigger -->
+        <button type="submit">Update Report</button>
+
+    </form>
+
+    <!-- Alternative Fallback Execution Layer when Data Records Fail to Load -->
+    {% else %}
+
+    <div class="error-card">
+        <h3>⚠️ Report not found</h3>
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

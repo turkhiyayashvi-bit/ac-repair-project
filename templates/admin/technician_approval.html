@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician Approval Queue - AC PCB Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .filter-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-form input, 
+        .filter-form select {
+            padding: 9px 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-size: 13.5px;
+            outline: none;
+            min-width: 180px;
+        }
+
+        .btn-action-group {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .btn-filter {
+            padding: 9px 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-reset {
+            padding: 9px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+
+        .btn-export {
+            padding: 9px 16px;
+            background: #10b981;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .table-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #f8fafc;
+            text-align: left;
+        }
+
+        .custom-table th {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 14px 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #00b4d8;
+            border-bottom: 1px solid #334155;
+        }
+
+        .custom-table td {
+            padding: 14px 16px;
+            font-size: 13.5px;
+            border-bottom: 1px solid #334155;
+            color: #cbd5e1;
+        }
+
+        .custom-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .badge-approved { color: #10b981; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-pending { color: #f59e0b; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+        .btn-approve {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn-approve:hover { background: #10b981; color: white; }
+
+        .btn-reject {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn-reject:hover { background: #ef4444; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2><i class="fa-solid fa-microchip"></i> AC PCB Admin</h2>
+    <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+    
+    <div class="menu-category">Technicians</div>
+    <a href="{{ url_for('technicians') }}"><i class="fa-solid fa-user-gear"></i> Technicians List</a>
+    <a href="{{ url_for('technician_approval') }}" class="active"><i class="fa-solid fa-user-check"></i> Approval Queue</a>
+
+    <div class="menu-category">Error Codes & Masters</div>
+    <a href="{{ url_for('brands') }}"><i class="fa-solid fa-tags"></i> AC Brands</a>
+    <a href="{{ url_for('ac_error_codes') }}"><i class="fa-solid fa-file-pdf"></i> AC Error Codes</a>
+    <a href="{{ url_for('pcb_companies') }}"><i class="fa-solid fa-industry"></i> PCB Companies</a>
+    <a href="{{ url_for('pcb_models') }}"><i class="fa-solid fa-cubes"></i> PCB Models</a>
+    <a href="{{ url_for('pcb_error_codes') }}"><i class="fa-solid fa-bolt"></i> PCB Error Codes</a>
+
+    <div class="menu-category">Repair Operations</div>
+    <a href="{{ url_for('repair_jobs') }}"><i class="fa-solid fa-screwdriver-wrench"></i> Repair Jobs</a>
+
+    <div class="menu-category">Analytics & Reports</div>
+    <a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-column"></i> Reports & History</a>
+
+    <div class="menu-category">System Admin</div>
+    <a href="{{ url_for('staff_users') }}"><i class="fa-solid fa-user-shield"></i> Staff Users</a>
+    <a href="{{ url_for('roles') }}"><i class="fa-solid fa-user-lock"></i> Roles & Permissions</a>
+    <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> Settings & WhatsApp</a>
+    
+    <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fa-solid fa-power-off"></i> Logout</a>
+</div>
+
+<div class="main">
+    <div class="top-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <div>
+            <h1><i class="fa-solid fa-user-check" style="color: #00b4d8; margin-right: 8px;"></i> Technician Approval Queue</h1>
+            <div class="welcome-msg">Approve technicians to grant repair tracking access</div>
+        </div>
+        <a href="{{ url_for('export_technicians') }}" class="btn-export">
+            <i class="fa-solid fa-file-excel"></i> Export CSV
+        </a>
+    </div>
+
+    <div class="filter-card">
+        <form method="GET" action="{{ url_for('technician_approval') }}" class="filter-form">
+            <input type="text" name="search" placeholder="Search Name, City, State..." value="{{ request.args.get('search','') }}">
+
+            <select name="status">
+                <option value="">All Statuses</option>
+                <option value="Approved" {% if request.args.get('status')=="Approved" %}selected{% endif %}>Approved</option>
+                <option value="Not Approved" {% if request.args.get('status')=="Not Approved" %}selected{% endif %}>Not Approved</option>
+            </select>
+
+            <button type="submit" class="btn-filter"><i class="fa-solid fa-magnifying-glass"></i> Filter</button>
+            <a href="{{ url_for('technician_approval') }}" class="btn-reset">Reset</a>
+            
+            <a href="{{ url_for('add_technician') }}" class="btn-filter" style="background:#00b4d8; margin-left:auto;">
+                <i class="fa-solid fa-user-plus"></i> Add Technician
+            </a>
+        </form>
+    </div>
+
+    <div class="table-card">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>City / State</th>
+                    <th>Approval Status</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if technicians %}
+                    {% for tech in technicians %}
+                    <tr>
+                        <td><strong>#{{ tech.id }}</strong></td>
+                        <td>{{ tech.name }}</td>
+                        <td>{{ tech.email }}</td>
+                        <td>{{ tech.phone }}</td>
+                        <td>{{ tech.city or '-' }} {% if tech.state %}({{ tech.state }}){% endif %}</td>
+                        <td>
+                            {% if tech.is_approved %}
+                                <span class="badge-approved"><i class="fa-solid fa-check"></i> Approved</span>
+                            {% else %}
+                                <span class="badge-pending"><i class="fa-solid fa-clock"></i> Not Approved</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: center;">
+                            {% if tech.is_approved %}
+                                <a href="{{ url_for('reject_technician', id=tech.id) }}" class="btn-reject" onclick="return confirm('Revoke approval for this technician?')">
+                                    <i class="fa-solid fa-xmark"></i> Reject
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('approve_technician', id=tech.id) }}" class="btn-approve">
+                                    <i class="fa-solid fa-check"></i> Approve
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 30px; color: #94a3b8;">
+                            <i class="fa-solid fa-user-slash" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+                            No technicians found in this queue.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

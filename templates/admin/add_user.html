@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           PURE PREMIUM CYBER GLASSMORPHISM FORM
+           ========================================= */
+        :root {
+            --main-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.45); /* Translucent Glass */
+            --glass-input: rgba(255, 255, 255, 0.04); /* Pure Transparent Glass */
+            --border-color: rgba(255, 255, 255, 0.08);
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* GLASS FORM BOX WITH RADIAL NEON SHADOW */
+        .form-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+            padding: 35px 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 0 35px rgba(37, 99, 235, 0.15), 0 15px 35px rgba(0, 0, 0, 0.5); 
+            transition: var(--transition);
+        }
+
+        /* BOX NEON GLOW ON HOVER */
+        .form-box:hover {
+            border-color: var(--tech-cyan);
+            box-shadow: 0 0 45px rgba(0, 180, 216, 0.3), 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .form-box h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 0;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
+            position: relative;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-box h2::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0;
+            width: 50px; height: 3px;
+            background: linear-gradient(90deg, var(--tech-cyan), var(--tech-blue));
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--tech-cyan);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        .form-box label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+
+        /* 🔮 GLASS TEXTBOX IMPLEMENTATION (COLOR REMOVED) */
+        .form-box input[type="text"],
+        .form-box input[type="password"],
+        .form-box select {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: var(--glass-input); /* Pure Glass Translucency */
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            color: var(--text-main);
+            font-size: 14.5px;
+            font-family: inherit;
+            box-sizing: border-box;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+        }
+
+        /* SELECT DROPDOWN ARROW */
+        .form-box select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2394a3b8'><path d='M0 3l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        /* ⚡ TEXTBOX GLOW EFFECT ON FOCUS */
+        .form-box input:focus,
+        .form-box select:focus {
+            border-color: var(--tech-cyan);
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.35);
+        }
+
+        /* LIQUID GRADIENT BUTTON WITH NEON POP */
+        .btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--tech-cyan), var(--tech-blue));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+            transition: var(--transition);
+            margin-top: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 180, 216, 0.55);
+        }
+
+        /* BACK LINK */
+        .back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            margin-top: 18px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back:hover {
+            color: var(--tech-cyan);
+            transform: translateX(-3px);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="main">
+    <div class="form-box">
+        <h2>Add User</h2>
+
+        <form action="/save_user" method="POST">
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required placeholder="Enter username">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required placeholder="Enter password">
+            </div>
+
+            <div class="form-group">
+                <label>Role</label>
+                <select name="role">
+                    <option value="Admin">Admin</option>
+                    <option value="Staff">Staff</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">
+                <i class="fa-solid fa-user-check" style="margin-right: 6px;"></i> Save User
+            </button>
+
+            <a href="/users" class="back">
+                <i class="fa-solid fa-arrow-left-long"></i> Back to Users
+            </a>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

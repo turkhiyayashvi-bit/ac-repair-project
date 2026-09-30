@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Repair Job - AC PCB Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --tech-green: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 1. SIDEBAR STRUCTURE */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 14px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .sidebar h2 {
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-main);
+            padding: 0 12px 24px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar h2::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--tech-cyan);
+            border-radius: 50%;
+        }
+
+        .sidebar .menu-category {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--tech-blue);
+            letter-spacing: 1px;
+            padding: 16px 12px 6px 12px;
+            user-select: none;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            margin: 2px 0;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+        .sidebar a i {
+            margin-right: 12px;
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--tech-cyan);
+            padding-left: 18px;
+        }
+        .sidebar a.active {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--tech-cyan);
+            font-weight: 600;
+            border-left: 4px solid var(--tech-cyan);
+        }
+
+        .sidebar .logout-btn {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .sidebar .logout-btn:hover { background-color: #ef4444; color: white; }
+
+        /* 2. MAIN WORKSPACE */
+        .main {
+            margin-left: 260px;
+            padding: 40px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* CLEAN FORM BOX (NO GLOW) */
+        .form-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 32px 40px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+
+        .form-box h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tech-cyan);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        /* 2-COLUMN GRID SYSTEM */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .form-box label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+
+        .form-box input[type="text"],
+        .form-box input[type="date"],
+        .form-box select,
+        .form-box textarea {
+            width: 100%;
+            padding: 11px 14px;
+            background-color: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            color: var(--text-main);
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: var(--transition);
+        }
+
+        .form-box input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .form-box textarea {
+            height: 70px;
+            resize: vertical;
+        }
+
+        .form-box select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2394a3b8'><path d='M0 3l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .form-box input:focus,
+        .form-box select:focus,
+        .form-box textarea:focus {
+            border-color: var(--tech-cyan);
+            background-color: rgba(15, 23, 42, 0.9);
+            box-shadow: none;
+        }
+
+        .btn-container {
+            grid-column: span 2;
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-box .btn {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--tech-cyan), var(--tech-blue));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .form-box .btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+        }
+
+        .btn-cancel {
+            background: #334155 !important;
+            color: #f8fafc !important;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-cancel:hover {
+            background: #475569 !important;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; }
+            .sidebar h2, .sidebar .menu-category { display: none; }
+            .sidebar a span { display: none; }
+            .sidebar a i { margin-right: 0; font-size: 20px; }
+            .main { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width, .btn-container { grid-column: span 1; }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- DYNAMIC SIDEBAR -->
+<div class="sidebar">
+    <h2>AC PCB Admin</h2>
+    <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+    
+    <div class="menu-category">User Management</div>
+    <a href="{{ url_for('users') }}"><i class="fa-solid fa-users"></i> <span>Users</span></a>
+    <a href="{{ url_for('technicians') }}"><i class="fa-solid fa-user-gear"></i> <span>Technicians</span></a>
+    <a href="{{ url_for('technician_approval') }}"><i class="fa-solid fa-user-check"></i> <span>Tech Approval</span></a>
+    <a href="{{ url_for('staff_users') }}"><i class="fa-solid fa-user-shield"></i> <span>Staff Users</span></a>
+
+    <div class="menu-category">Core Masters</div>
+    <a href="{{ url_for('brands') }}"><i class="fa-solid fa-tags"></i> <span>Brands</span></a>
+    <a href="{{ url_for('ac_error_codes') }}"><i class="fa-solid fa-triangle-exclamation"></i> <span>AC Error Codes</span></a>
+    <a href="{{ url_for('pcb_companies') }}"><i class="fa-solid fa-industry"></i> <span>PCB Companies</span></a>
+    <a href="{{ url_for('pcb_models') }}"><i class="fa-solid fa-cubes"></i> <span>PCB Models</span></a>
+    <a href="{{ url_for('pcb_error_codes') }}"><i class="fa-solid fa-bolt"></i> <span>PCB Error Codes</span></a>
+
+    <div class="menu-category">Operations</div>
+    <a href="{{ url_for('repair_jobs') }}" class="active"><i class="fa-solid fa-wrench"></i> <span>Repair Jobs</span></a>
+
+    <div class="menu-category">Analytics</div>
+    <a href="{{ url_for('reports') }}"><i class="fa-solid fa-file-invoice-dollar"></i> <span>Reports & Analytics</span></a>
+
+    <div class="menu-category">System Controls</div>
+    <a href="{{ url_for('roles') }}"><i class="fa-solid fa-user-lock"></i> <span>Roles & Permissions</span></a>
+    <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> <span>Settings</span></a>
+    
+    <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fa-solid fa-power-off"></i> <span>Logout</span></a>
+</div>
+
+<!-- MAIN WORKSPACE -->
+<div class="main">
+    <div class="form-box">
+        <h2><i class="fa-solid fa-plus-circle"></i> Add New Repair Job</h2>
+        
+        <form action="{{ url_for('save_repair_job') }}" method="POST">
+            <div class="form-grid">
+
+                <!-- ROW 1: TECHNICIAN & PHONE -->
+                <div class="form-group">
+                    <label>Technician / Customer</label>
+                    <select name="technician_id">
+                        <option value="">-- Direct Customer / Walk-In --</option>
+                        {% for tech in technicians %}
+                            <option value="{{ tech.id }}">{{ tech.name }} ({{ tech.phone }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Customer / Tech Phone No.</label>
+                    <input type="text" name="phone" placeholder="Enter 10 digit phone number">
+                </div>
+
+                <!-- ROW 2: PCB COMPANY & PCB MODEL -->
+                <div class="form-group">
+                    <label>PCB Company</label>
+                    <input type="text" name="pcb_company" placeholder="e.g. Daikin, Voltas" required>
+                </div>
+
+                <div class="form-group">
+                    <label>PCB Model</label>
+                    <input type="text" name="pcb_model" placeholder="e.g. FTKG50TV16U" required>
+                </div>
+
+                <!-- ROW 3: AC BRAND & ASSIGNED STAFF -->
+                <div class="form-group">
+                    <label>AC Brand</label>
+                    <input type="text" name="ac_brand" placeholder="e.g. Lloyd, LG, Blue Star" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Assigned Staff</label>
+                    <input type="text" name="assigned_staff" placeholder="Staff member name">
+                </div>
+
+                <!-- ROW 4: STATUS & RECEIVED DATE -->
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="Received" selected>Received</option>
+                        <option value="Diagnosing">Diagnosing</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Under Repair">Under Repair</option>
+                        <option value="Testing">Testing</option>
+                        <option value="Ready">Ready</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Received Date</label>
+                    <input type="date" name="received_date">
+                </div>
+
+                <!-- ROW 5: EXPECTED DATE & COMPLETED DATE -->
+                <div class="form-group">
+                    <label>Expected Date</label>
+                    <input type="date" name="expected_date">
+                </div>
+
+                <div class="form-group">
+                    <label>Completed Date</label>
+                    <input type="date" name="completed_date">
+                </div>
+
+                <!-- FULL WIDTH TEXTAREAS -->
+                <div class="form-group full-width">
+                    <label>Reported Fault</label>
+                    <textarea name="reported_fault" placeholder="Describe the fault or error code reported by customer"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Diagnosis</label>
+                    <textarea name="diagnosis" placeholder="Technical findings after initial testing"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Work Done</label>
+                    <textarea name="work_done" placeholder="Circuit repair work done"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Parts Replaced</label>
+                    <textarea name="parts_replaced" placeholder="List components replaced (IC, Relay, Transistor, Capacitors etc.)"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Remarks / Internal Notes</label>
+                    <textarea name="remarks" placeholder="Additional notes for internal tracking"></textarea>
+                </div>
+
+                <!-- BUTTON CONTAINER -->
+                <div class="btn-container">
+                    <a href="{{ url_for('repair_jobs') }}" class="btn btn-cancel">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Repair Job
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

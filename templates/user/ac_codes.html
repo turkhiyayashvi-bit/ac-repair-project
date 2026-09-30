@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AC Error Codes Lookup - AC PCB Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --tech-green: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--main-bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-logo i { color: var(--tech-cyan); }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back:hover { color: var(--text-main); }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .page-title { text-align: center; margin-bottom: 25px; }
+        .page-title h2 { font-size: 26px; color: var(--text-main); margin-bottom: 8px; }
+        .page-title p { color: var(--text-muted); font-size: 14px; }
+
+        /* SEARCH & FILTER BAR */
+        .search-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .search-card select, 
+        .search-card input {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-card select:focus, 
+        .search-card input:focus { border-color: var(--tech-cyan); }
+
+        .btn-search {
+            background: linear-gradient(135deg, var(--tech-cyan), var(--tech-blue));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        .btn-search:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* ERROR CODES GRID */
+        .codes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .code-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .code-card:hover {
+            border-color: var(--tech-cyan);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 180, 216, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-badge {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--tech-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .error-badge {
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--tech-cyan);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-family: monospace;
+            font-size: 16px;
+            border: 1px solid rgba(0, 180, 216, 0.3);
+        }
+
+        .error-title { font-size: 16px; font-weight: 700; color: var(--text-main); }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .info-box.solution {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--tech-green);
+        }
+
+        .info-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 36px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .search-card { flex-direction: column; }
+            .btn-search { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/user" class="brand-logo">
+            <i class="fa-solid fa-microchip"></i>
+            <span>AC PCB Service</span>
+        </a>
+        <a href="/user" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Home</a>
+    </nav>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>AC Error Codes Database</h2>
+            <p>Select your AC brand or search by error code (e.g., E1, CH05, U4)</p>
+        </div>
+
+        <!-- SEARCH / FILTER FORM -->
+        <form method="GET" action="/user/ac_codes" class="search-card">
+            <select name="brand_id" onchange="this.form.submit()">
+                <option value="">-- All AC Brands --</option>
+                {% for brand in brands %}
+                    <option value="{{ brand.id }}" {% if request.args.get('brand_id') == brand.id|string %}selected{% endif %}>
+                        {{ brand.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input type="text" name="search" placeholder="Type Error Code or Keyword..." value="{{ request.args.get('search','') }}">
+            
+            <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+        </form>
+
+        <!-- ERROR CODES DISPLAY GRID -->
+        <div class="codes-grid">
+            {% if error_codes %}
+                {% for err in error_codes %}
+                    <div class="code-card">
+                        <div class="card-header">
+                            <span class="brand-badge"><i class="fa-solid fa-tag"></i> {{ err.brand_name }}</span>
+                            <span class="error-badge">{{ err.error_code }}</span>
+                        </div>
+                        
+                        <div class="error-title">{{ err.error_name }}</div>
+
+                        {% if err.description %}
+                        <div class="info-box">
+                            <span class="info-label">Symptom / Description</span>
+                            {{ err.description }}
+                        </div>
+                        {% endif %}
+
+                        {% if err.solution %}
+                        <div class="info-box solution">
+                            <span class="info-label" style="color: var(--tech-green);">Troubleshooting Solution</span>
+                            {{ err.solution }}
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <p>No error codes found for the selected criteria.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

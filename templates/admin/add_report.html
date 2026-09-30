@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Add Report</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        .form-box{
+            width:600px;
+            margin:40px auto;
+            padding:25px;
+            background:rgba(255,255,255,.05);
+            border-radius:10px;
+            color:white;
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        input,
+        textarea,
+        select{
+
+            width:100%;
+            padding:10px;
+            margin-bottom:15px;
+            border:none;
+            border-radius:5px;
+
+        }
+
+        textarea{
+            height:120px;
+        }
+
+        .btn{
+
+            width:100%;
+            padding:12px;
+            background:#00bcd4;
+            color:white;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="main">
+
+<div class="form-box">
+
+<h2>Add New Report</h2>
+
+<form action="/save_report" method="POST">
+
+<label>Customer Name</label>
+
+<input
+type="text"
+name="customer_name"
+required>
+
+<label>Phone Number</label>
+
+<input
+type="text"
+name="phone"
+required>
+
+<label>Technician</label>
+
+<select name="technician_id">
+
+{% for technician in technicians %}
+
+<option value="{{ technician.id }}">
+{{ technician.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<label>Complaint</label>
+
+<textarea
+name="complaint"
+required>
+</textarea>
+
+<label>Status</label>
+
+<select name="status">
+
+<option value="Pending">
+Pending
+</option>
+
+<option value="In Progress">
+In Progress
+</option>
+
+<option value="Completed">
+Completed
+</option>
+
+</select>
+
+<input
+type="submit"
+value="Save Report"
+class="btn">
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

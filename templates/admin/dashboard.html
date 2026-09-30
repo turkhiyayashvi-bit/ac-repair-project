@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AC Service & PCB Repair Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* MD SPECIFIC KPI CARD STYLING */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .kpi-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .kpi-details h3 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0 0 6px 0;
+        }
+        .kpi-details p {
+            font-size: 30px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0;
+            line-height: 1;
+        }
+        .kpi-icon {
+            font-size: 26px;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.5);
+        }
+        .blue-glow .kpi-icon { color: #3b82f6; }
+        .green-glow .kpi-icon { color: #10b981; }
+        .orange-glow .kpi-icon { color: #f59e0b; }
+    </style>
+</head>
+
+<body>
+
+<div id="notification-toast" class="toast-alert hidden">
+    <div class="toast-content">
+        <span class="toast-icon"><i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i></span>
+        <div class="toast-text">
+            <h4>System Alert</h4>
+            <p>No active technicians available right now!</p>
+        </div>
+    </div>
+    <button class="toast-close" onclick="closeToast()">×</button>
+</div>
+
+<div class="sidebar">
+    <h2><i class="fa-solid fa-microchip"></i> AC PCB Admin</h2>
+    
+    <a href="{{ url_for('dashboard') }}" class="active">
+        <i class="fa-solid fa-chart-pie"></i> Dashboard
+    </a>
+    
+    <div class="menu-category">Technicians</div>
+    <a href="{{ url_for('technicians') }}"><i class="fa-solid fa-user-gear"></i> Technicians List</a>
+    <a href="{{ url_for('technician_approval') }}"><i class="fa-solid fa-user-check"></i> Approval Queue</a>
+
+    <div class="menu-category">Error Codes & Masters</div>
+    <a href="{{ url_for('brands') }}"><i class="fa-solid fa-tags"></i> AC Brands</a>
+    <a href="{{ url_for('ac_error_codes') }}"><i class="fa-solid fa-file-pdf"></i> AC Error Codes</a>
+    <a href="{{ url_for('pcb_companies') }}"><i class="fa-solid fa-industry"></i> PCB Companies</a>
+    <a href="{{ url_for('pcb_models') }}"><i class="fa-solid fa-cubes"></i> PCB Models</a>
+    <a href="{{ url_for('pcb_error_codes') }}"><i class="fa-solid fa-bolt"></i> PCB Error Codes</a>
+
+    <div class="menu-category">Repair Operations</div>
+    <a href="{{ url_for('repair_jobs') }}"><i class="fa-solid fa-screwdriver-wrench"></i> Repair Jobs</a>
+
+    <div class="menu-category">Analytics & Reports</div>
+    <a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-column"></i> Reports & History</a>
+
+    <div class="menu-category">System Admin</div>
+    <a href="{{ url_for('staff_users') }}"><i class="fa-solid fa-user-shield"></i> Staff Users</a>
+    <a href="{{ url_for('roles') }}"><i class="fa-solid fa-user-lock"></i> Roles & Permissions</a>
+    <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> Settings & WhatsApp</a>
+    
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+        <i class="fa-solid fa-power-off"></i> Logout
+    </a>
+</div>
+
+<div class="main">
+    <div class="top-header">
+        <div>
+            <h1>AC Service & PCB Repair Admin</h1>
+            <div class="welcome-msg">System Overview & Live Repair Monitor</div>
+        </div>
+        <div class="system-status">
+            <span class="pulse-dot"></span> Server Active
+        </div>
+    </div>
+
+    <div class="card-container">
+        <div class="kpi-card blue-glow">
+            <div class="kpi-details">
+                <h3>Total Technicians</h3>
+                <p>{{ total_users }}</p>
+            </div>
+            <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+        </div>
+
+        <div class="kpi-card green-glow">
+            <div class="kpi-details">
+                <h3>Approved Technicians</h3>
+                <p id="active-tech-count">{{ active_tech }}</p>
+            </div>
+            <div class="kpi-icon"><i class="fa-solid fa-user-check"></i></div>
+        </div>
+
+        <div class="kpi-card orange-glow">
+            <div class="kpi-details">
+                <h3>Pending Repair Jobs</h3>
+                <p>{{ pending_reports }}</p>
+            </div>
+            <div class="kpi-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="chart-box">
+            <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--tech-orange, #f59e0b); margin-right: 8px;"></i> Repair Job Status Flow</h3>
+            <div class="chart-wrapper">
+                <canvas id="repairJobsChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-box">
+            <h3><i class="fa-solid fa-layer-group" style="color: var(--tech-cyan, #00b4d8); margin-right: 8px;"></i> Share by AC Brands</h3>
+            <div class="chart-wrapper">
+                <canvas id="brandsShareChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const activeTech = parseInt(document.getElementById("active-tech-count").innerText) || 0;
+        if (activeTech === 0) {
+            const toast = document.getElementById("notification-toast");
+            toast.classList.remove("hidden");
+            toast.classList.add("show");
+        }
+
+        const dynamicRepairData = {{ repair_jobs_data | tojson }};
+        const dynamicBrandLabels = {{ brand_labels | tojson }};
+        let dynamicBrandCounts = {{ brand_counts | tojson }};
+
+        const isAllZero = dynamicBrandCounts.every(count => count === 0);
+        if (isAllZero && dynamicBrandCounts.length > 0) {
+            dynamicBrandCounts = dynamicBrandCounts.map(() => 1); 
+        }
+
+        // 1. REPAIR JOBS CHART (.MD STATUS PIPELINE)
+        const ctxJobs = document.getElementById('repairJobsChart').getContext('2d');
+        new Chart(ctxJobs, {
+            type: 'bar',
+            data: {
+                labels: ['Received', 'Diagnosing', 'In Progress', 'Under Repair', 'Testing', 'Ready', 'Delivered'], 
+                datasets: [{
+                    label: 'Repair Jobs',
+                    data: dynamicRepairData,
+                    backgroundColor: ['#3b82f6', '#0ea5e9', '#f59e0b', '#ef4444', '#10b981', '#00b4d8', '#64748b'], 
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { 
+                        grid: { color: '#334155' }, 
+                        ticks: { color: '#94a3b8', stepSize: 1 },
+                        min: 0,
+                        suggestedMax: 5
+                    },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+
+        // 2. AC BRANDS CHART
+        const ctxBrands = document.getElementById('brandsShareChart').getContext('2d');
+        new Chart(ctxBrands, {
+            type: 'doughnut',
+            data: {
+                labels: dynamicBrandLabels,
+                datasets: [{
+                    data: dynamicBrandCounts, 
+                    backgroundColor: ['#00b4d8', '#3b82f6', '#10b981', '#f59e0b', '#64748b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { boxWidth: 12, color: '#94a3b8', padding: 15 } 
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    });
+
+    function closeToast() {
+        const toast = document.getElementById("notification-toast");
+        toast.classList.remove("show");
+        toast.classList.add("hidden");
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit PCB Company - AC PCB Admin</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --tech-orange: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* SIDEBAR STYLING */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 14px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .sidebar h2 {
+            font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+            color: var(--text-main); padding: 0 12px 24px 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar .menu-category {
+            font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--tech-cyan); letter-spacing: 1px; padding: 16px 12px 6px 12px; user-select: none;
+        }
+
+        .sidebar a {
+            display: flex; align-items: center; padding: 10px 14px; margin: 2px 0; text-decoration: none;
+            color: var(--text-muted); font-size: 14px; font-weight: 500; border-radius: 10px; transition: var(--transition);
+        }
+        .sidebar a i { margin-right: 12px; font-size: 15px; width: 20px; text-align: center; }
+        .sidebar a:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--tech-cyan); padding-left: 18px; }
+        .sidebar a.active { background-color: rgba(59, 130, 246, 0.15); color: var(--tech-cyan); font-weight: 600; border-left: 4px solid var(--tech-cyan); }
+
+        .sidebar .logout-btn { margin-top: auto; background-color: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .sidebar .logout-btn:hover { background-color: #ef4444; color: white; }
+
+        /* MAIN AREA CENTER ALIGNMENT */
+        .main {
+            margin-left: 260px;
+            padding: 40px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 35px 40px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-header h2 { font-size: 20px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: var(--transition); }
+        .back-btn:hover { color: var(--tech-cyan); }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+        .form-group label { font-size: 11.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .form-group input[type="text"], .form-group select {
+            width: 100%; padding: 11px 14px; background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); font-size: 14px; outline: none; transition: var(--transition);
+        }
+
+        .form-group input[type="text"]:focus, .form-group select:focus {
+            border-color: var(--tech-cyan); box-shadow: none; outline: none;
+        }
+
+        .current-logo-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px dashed var(--border-color);
+            padding: 12px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+            width: fit-content;
+        }
+
+        .current-logo-box img {
+            width: 70px; height: 70px; object-fit: contain; background: rgba(255, 255, 255, 0.05); padding: 6px; border-radius: 8px; border: 1px solid var(--border-color);
+        }
+
+        .form-group input[type="file"] {
+            width: 100%; padding: 8px 12px; background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-muted); font-size: 13.5px; outline: none; cursor: pointer;
+        }
+
+        .form-group input[type="file"]::file-selector-button {
+            background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4);
+            color: var(--tech-cyan); padding: 6px 14px; border-radius: 6px; margin-right: 12px; cursor: pointer; font-weight: 600; transition: var(--transition);
+        }
+
+        .form-group input[type="file"]::file-selector-button:hover { background: var(--tech-blue); color: white; }
+        .form-group select option { background: #1e293b; color: var(--text-main); }
+
+        .btn-container { display: flex; gap: 12px; margin-top: 10px; }
+        .btn-submit {
+            flex: 1; padding: 12px; background: #f59e0b; color: #0f172a; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition);
+        }
+
+        .btn-submit:hover { background: #d97706; transform: translateY(-1px); }
+        .btn-cancel {
+            padding: 12px 20px; background: rgba(255, 255, 255, 0.05); color: var(--text-muted);
+            border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; text-align: center; transition: var(--transition);
+        }
+        .btn-cancel:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-main); }
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2><i class="fa-solid fa-microchip"></i> AC PCB Admin</h2>
+    <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+    
+    <div class="menu-category">Technicians</div>
+    <a href="{{ url_for('technicians') }}"><i class="fa-solid fa-user-gear"></i> Technicians List</a>
+    <a href="{{ url_for('technician_approval') }}"><i class="fa-solid fa-user-check"></i> Approval Queue</a>
+
+    <div class="menu-category">Error Codes & Masters</div>
+    <a href="{{ url_for('brands') }}"><i class="fa-solid fa-tags"></i> AC Brands</a>
+    <a href="{{ url_for('ac_error_codes') }}"><i class="fa-solid fa-file-pdf"></i> AC Error Codes</a>
+    <a href="{{ url_for('pcb_companies') }}" class="active"><i class="fa-solid fa-industry"></i> PCB Companies</a>
+    <a href="{{ url_for('pcb_models') }}"><i class="fa-solid fa-cubes"></i> PCB Models</a>
+    <a href="{{ url_for('pcb_error_codes') }}"><i class="fa-solid fa-bolt"></i> PCB Error Codes</a>
+
+    <div class="menu-category">Repair Operations</div>
+    <a href="{{ url_for('repair_jobs') }}"><i class="fa-solid fa-screwdriver-wrench"></i> Repair Jobs</a>
+
+    <div class="menu-category">Analytics & Reports</div>
+    <a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-column"></i> Reports & History</a>
+
+    <div class="menu-category">System Admin</div>
+    <a href="{{ url_for('staff_users') }}"><i class="fa-solid fa-user-shield"></i> Staff Users</a>
+    <a href="{{ url_for('roles') }}"><i class="fa-solid fa-user-lock"></i> Roles & Permissions</a>
+    <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> Settings & WhatsApp</a>
+    
+    <a href="{{ url_for('logout') }}" class="logout-btn"><i class="fa-solid fa-power-off"></i> Logout</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+    <div class="form-card">
+        <div class="form-header">
+            <h2><i class="fa-solid fa-pen-to-square" style="color: var(--tech-orange);"></i> Edit PCB Company</h2>
+            <a href="{{ url_for('pcb_companies') }}" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to List</a>
+        </div>
+
+        <form action="{{ url_for('update_pcb_company', id=company.id) }}" method="POST" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label>Company Name</label>
+                <input type="text" name="name" value="{{ company.name }}" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label>Current Logo</label>
+                <div class="current-logo-box">
+                    {% if company.logo %}
+                        <img src="{{ url_for('static', filename='uploads/pcb_companies/' + company.logo) }}" alt="Current Company Logo">
+                    {% else %}
+                        <i class="fa-solid fa-image" style="color: var(--text-muted); font-size: 30px;"></i>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Change Logo (Optional)</label>
+                <input type="file" name="logo" accept=".png,.jpg,.jpeg">
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="Active" {% if company.status=="Active" %}selected{% endif %}>Active</option>
+                    <option value="Inactive" {% if company.status=="Inactive" %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+
+            <div class="btn-container">
+                <a href="{{ url_for('pcb_companies') }}" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-check"></i> Update Company
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

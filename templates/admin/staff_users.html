@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Users - AC PCB Admin</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --sidebar-bg: #1e293b;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --tech-orange: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* UNIFIED SIDEBAR STYLING */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            top: 0; left: 0;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 24px 14px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .sidebar h2 {
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-main);
+            padding: 0 12px 24px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar .menu-category {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--tech-cyan);
+            letter-spacing: 1px;
+            padding: 16px 12px 6px 12px;
+            user-select: none;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            margin: 2px 0;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+        .sidebar a i {
+            margin-right: 12px;
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+        }
+        .sidebar a:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--tech-cyan);
+            padding-left: 18px;
+        }
+        .sidebar a.active {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: var(--tech-cyan);
+            font-weight: 600;
+            border-left: 4px solid var(--tech-cyan);
+        }
+
+        .sidebar .logout-btn {
+            margin-top: auto;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+        .sidebar .logout-btn:hover { background-color: #ef4444; color: white; }
+
+        /* MAIN WORKSPACE */
+        .main {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .top-header h1 { font-size: 26px; font-weight: 700; color: var(--text-main); letter-spacing: -0.5px; }
+        .welcome-msg { color: var(--text-muted); font-size: 13.5px; margin-top: 4px; }
+
+        /* TABLE CONTAINER */
+        .table-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--tech-cyan);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, var(--tech-cyan), var(--tech-blue));
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.3);
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 180, 216, 0.5); color: white; }
+
+        /* TABLE STYLING */
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--tech-cyan);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        td { padding: 14px 16px; font-size: 13.5px; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle; }
+        tr:hover td { background-color: rgba(255, 255, 255, 0.02); }
+
+        /* ROLE BADGES */
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .badge-admin { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-staff { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-default { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
+
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; }
+            .sidebar h2, .sidebar .menu-category { display: none; }
+            .sidebar a span { display: none; }
+            .sidebar a i { margin-right: 0; font-size: 20px; }
+            .main { margin-left: 80px; width: calc(100% - 80px); padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- UNIFIED SIDEBAR -->
+<div class="sidebar">
+    <h2><i class="fa-solid fa-microchip"></i> AC PCB Admin</h2>
+    
+    <a href="{{ url_for('dashboard') }}">
+        <i class="fa-solid fa-chart-pie"></i> Dashboard
+    </a>
+    
+    <div class="menu-category">Technicians</div>
+    <a href="{{ url_for('technicians') }}"><i class="fa-solid fa-user-gear"></i> Technicians List</a>
+    <a href="{{ url_for('technician_approval') }}"><i class="fa-solid fa-user-check"></i> Approval Queue</a>
+
+    <div class="menu-category">Error Codes & Masters</div>
+    <a href="{{ url_for('brands') }}"><i class="fa-solid fa-tags"></i> AC Brands</a>
+    <a href="{{ url_for('ac_error_codes') }}"><i class="fa-solid fa-file-pdf"></i> AC Error Codes</a>
+    <a href="{{ url_for('pcb_companies') }}"><i class="fa-solid fa-industry"></i> PCB Companies</a>
+    <a href="{{ url_for('pcb_models') }}"><i class="fa-solid fa-cubes"></i> PCB Models</a>
+    <a href="{{ url_for('pcb_error_codes') }}"><i class="fa-solid fa-bolt"></i> PCB Error Codes</a>
+
+    <div class="menu-category">Repair Operations</div>
+    <a href="{{ url_for('repair_jobs') }}"><i class="fa-solid fa-screwdriver-wrench"></i> Repair Jobs</a>
+
+    <div class="menu-category">Analytics & Reports</div>
+    <a href="{{ url_for('reports') }}"><i class="fa-solid fa-chart-column"></i> Reports & History</a>
+
+    <div class="menu-category">System Admin</div>
+    <a href="{{ url_for('staff_users') }}" class="active"><i class="fa-solid fa-user-shield"></i> Staff Users</a>
+    <a href="{{ url_for('roles') }}"><i class="fa-solid fa-user-lock"></i> Roles & Permissions</a>
+    <a href="{{ url_for('settings') }}"><i class="fa-solid fa-sliders"></i> Settings & WhatsApp</a>
+    
+    <a href="{{ url_for('logout') }}" class="logout-btn">
+        <i class="fa-solid fa-power-off"></i> Logout
+    </a>
+</div>
+
+<!-- MAIN WORKSPACE -->
+<div class="main">
+    <div class="top-header">
+        <div>
+            <h1>Staff Users Management</h1>
+            <div class="welcome-msg">Manage internal system users, administrators, and staff access roles</div>
+        </div>
+    </div>
+
+    <div class="table-box">
+        <div class="action-header">
+            <h3><i class="fa-solid fa-user-shield"></i> Registered Staff Members</h3>
+            <!-- Optional: Add user button if endpoint exists -->
+            {% if 'add_user' in endpoints or true %}
+            <a href="{{ url_for('add_user') if 'add_user' in endpoints else '#' }}" class="btn-add">
+                <i class="fa-solid fa-user-plus"></i> Add Staff User
+            </a>
+            {% endif %}
+        </div>
+
+        <div style="overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color);">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if staff %}
+                        {% for user in staff %}
+                        <tr>
+                            <td><strong>#{{ user.id }}</strong></td>
+                            <td>
+                                <i class="fa-regular fa-user" style="color: var(--text-muted); margin-right: 8px;"></i>
+                                <strong>{{ user.username }}</strong>
+                            </td>
+                            <td>
+                                {% if user.role == 'Admin' or user.role == 'admin' %}
+                                    <span class="role-badge badge-admin"><i class="fa-solid fa-shield-halved"></i> {{ user.role }}</span>
+                                {% elif user.role == 'Staff' or user.role == 'staff' %}
+                                    <span class="role-badge badge-staff"><i class="fa-solid fa-user-tie"></i> {{ user.role }}</span>
+                                {% else %}
+                                    <span class="role-badge badge-default"><i class="fa-solid fa-user"></i> {{ user.role }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="fa-regular fa-calendar" style="color: var(--text-muted); margin-right: 6px;"></i>
+                                {{ user.created_at if user.created_at else 'N/A' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 30px; color: var(--text-muted);">
+                                <i class="fa-solid fa-folder-open" style="font-size: 28px; margin-bottom: 8px; display: block;"></i>
+                                No staff users found in the system.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

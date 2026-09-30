@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track PCB Repair Work - AC PCB Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --tech-green: #10b981;
+            --tech-orange: #f59e0b;
+            --tech-whatsapp: #25d366;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--main-bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        .navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-logo i { color: var(--tech-cyan); }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back:hover { color: var(--text-main); }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; width: 100%; }
+        .page-title { text-align: center; margin-bottom: 25px; }
+        .page-title h2 { font-size: 26px; color: var(--text-main); margin-bottom: 8px; }
+        .page-title p { color: var(--text-muted); font-size: 14px; }
+
+        .search-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .search-card input {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+        }
+        .search-card input:focus { border-color: var(--tech-cyan); }
+
+        .btn-track {
+            background: linear-gradient(135deg, var(--tech-cyan), var(--tech-blue));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        .btn-track:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* JOB CARD & STATUS BADGES */
+        .job-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .job-id { font-size: 20px; font-weight: 800; color: var(--tech-cyan); }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .badge-received { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-diagnosing { background: rgba(14, 165, 233, 0.15); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.3); }
+        .badge-inprogress { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-underrepair { background: rgba(231, 76, 60, 0.15); color: #e74c3c; border: 1px solid rgba(231, 76, 60, 0.3); }
+        .badge-testing { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-ready { background: rgba(0, 210, 255, 0.15); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.3); box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+        .badge-delivered { background: rgba(100, 116, 139, 0.15); color: #64748b; border: 1px solid rgba(100, 116, 139, 0.3); }
+
+        /* LIVE TRACKING TIMELINE / STEPPER */
+        .timeline-stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 25px 0;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            min-width: 80px;
+        }
+
+        .step-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            margin-bottom: 6px;
+            transition: var(--transition);
+        }
+
+        .step-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .step-item.completed .step-icon {
+            background: var(--tech-green);
+            border-color: var(--tech-green);
+            color: white;
+        }
+
+        .step-item.active .step-icon {
+            background: var(--tech-cyan);
+            border-color: var(--tech-cyan);
+            color: white;
+            box-shadow: 0 0 12px rgba(0, 180, 216, 0.5);
+        }
+
+        .step-item.completed .step-label, .step-item.active .step-label {
+            color: var(--text-main);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .info-item label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 3px; font-weight: 600; }
+        .info-item span { font-size: 14px; font-weight: 600; color: var(--text-main); }
+
+        .contact-box {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            padding-top: 15px;
+            border-top: 1px dashed var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .btn-call {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--tech-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        .btn-call:hover { background: var(--tech-blue); color: white; }
+
+        .btn-whatsapp {
+            background: var(--tech-whatsapp);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
+        }
+        .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 40px; margin-bottom: 12px; display: block; color: var(--border-color); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/user" class="brand-logo">
+            <i class="fa-solid fa-microchip"></i>
+            <span>AC PCB Service</span>
+        </a>
+        <a href="/user" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Home</a>
+    </nav>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>Track PCB Repair Work</h2>
+            <p>Enter your Repair Job ID or Registered Mobile Number to view live status</p>
+        </div>
+
+        <!-- SEARCH FORM -->
+        <form method="GET" action="/user/track_repair" class="search-card">
+            <input type="text" name="query" value="{{ request.args.get('query', '') }}" placeholder="Enter Repair Job ID (e.g. 1) or Phone No." required>
+            <button type="submit" class="btn-track"><i class="fa-solid fa-magnifying-glass"></i> Track Job</button>
+        </form>
+
+        <!-- RESULTS LIST -->
+        {% if request.args.get('query') %}
+            {% if jobs %}
+                {% for job in jobs %}
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <span class="job-id">Job #{{ job.id }}</span>
+                                <div style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">
+                                    Technician / Customer: <strong style="color: var(--text-main);">{{ job.technician_name or job.customer_name or 'Direct Customer' }}</strong>
+                                </div>
+                            </div>
+
+                            <!-- DYNAMIC STATUS BADGE DISPLAY -->
+                            {% if job.status == 'Received' %}
+                                <span class="status-badge badge-received"><i class="fa-solid fa-inbox"></i> Received</span>
+                            {% elif job.status == 'Diagnosing' %}
+                                <span class="status-badge badge-diagnosing"><i class="fa-solid fa-stethoscope"></i> Diagnosing</span>
+                            {% elif job.status == 'In Progress' %}
+                                <span class="status-badge badge-inprogress"><i class="fa-solid fa-spinner fa-spin"></i> In Progress</span>
+                            {% elif job.status == 'Under Repair' %}
+                                <span class="status-badge badge-underrepair"><i class="fa-solid fa-wrench"></i> Under Repair</span>
+                            {% elif job.status == 'Testing' %}
+                                <span class="status-badge badge-testing"><i class="fa-solid fa-vial"></i> Testing</span>
+                            {% elif job.status == 'Ready' %}
+                                <span class="status-badge badge-ready"><i class="fa-solid fa-circle-check"></i> Ready</span>
+                            {% elif job.status == 'Delivered' %}
+                                <span class="status-badge badge-delivered"><i class="fa-solid fa-truck-ramp-box"></i> Delivered</span>
+                            {% else %}
+                                <span class="status-badge badge-received">{{ job.status }}</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- LIVE REPAIR PROGRESS TIMELINE STEPPER -->
+                        <div class="timeline-stepper">
+                            <div class="step-item {% if job.status in ['Received', 'Diagnosing', 'In Progress', 'Under Repair', 'Testing', 'Ready', 'Delivered'] %}completed{% endif %} {% if job.status == 'Received' %}active{% endif %}">
+                                <div class="step-icon"><i class="fa-solid fa-inbox"></i></div>
+                                <div class="step-label">Received</div>
+                            </div>
+                            <div class="step-item {% if job.status in ['Diagnosing', 'In Progress', 'Under Repair', 'Testing', 'Ready', 'Delivered'] %}completed{% endif %} {% if job.status == 'Diagnosing' %}active{% endif %}">
+                                <div class="step-icon"><i class="fa-solid fa-stethoscope"></i></div>
+                                <div class="step-label">Diagnosing</div>
+                            </div>
+                            <div class="step-item {% if job.status in ['In Progress', 'Under Repair', 'Testing', 'Ready', 'Delivered'] %}completed{% endif %} {% if job.status in ['In Progress', 'Under Repair'] %}active{% endif %}">
+                                <div class="step-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                                <div class="step-label">Repairing</div>
+                            </div>
+                            <div class="step-item {% if job.status in ['Testing', 'Ready', 'Delivered'] %}completed{% endif %} {% if job.status == 'Testing' %}active{% endif %}">
+                                <div class="step-icon"><i class="fa-solid fa-vial"></i></div>
+                                <div class="step-label">Testing</div>
+                            </div>
+                            <div class="step-item {% if job.status in ['Ready', 'Delivered'] %}completed{% endif %} {% if job.status == 'Ready' %}active{% endif %}">
+                                <div class="step-icon"><i class="fa-solid fa-circle-check"></i></div>
+                                <div class="step-label">Ready</div>
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>PCB Company & Model</label>
+                                <span>{{ job.pcb_company }} ({{ job.pcb_model }})</span>
+                            </div>
+                            <div class="info-item">
+                                <label>AC Brand</label>
+                                <span>{{ job.ac_brand }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Received Date</label>
+                                <span>{{ job.received_date or job.created_at or 'N/A' }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Expected Completion</label>
+                                <span>{{ job.expected_date or 'Pending Inspection' }}</span>
+                            </div>
+                        </div>
+
+                        <!-- REPORTED FAULT OR COMPLAINT -->
+                        {% if job.reported_fault %}
+                            <div style="margin-bottom: 12px; font-size: 13.5px; background: rgba(15,23,42,0.4); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <strong style="color: var(--tech-cyan);"><i class="fa-solid fa-triangle-exclamation"></i> Reported Fault:</strong> 
+                                {{ job.reported_fault }}
+                            </div>
+                        {% endif %}
+
+                        <!-- DIAGNOSIS & WORK DONE SUMMARY -->
+                        {% if job.diagnosis %}
+                            <div style="margin-bottom: 8px; font-size: 13.5px; background: rgba(59,130,246,0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.2);">
+                                <strong style="color: var(--tech-blue);"><i class="fa-solid fa-magnifying-glass"></i> Diagnosis:</strong> {{ job.diagnosis }}
+                            </div>
+                        {% endif %}
+
+                        {% if job.work_done %}
+                            <div style="margin-bottom: 8px; font-size: 13.5px; background: rgba(16,185,129,0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.2);">
+                                <strong style="color: #10b981;"><i class="fa-solid fa-circle-check"></i> Work Done:</strong> {{ job.work_done }}
+                            </div>
+                        {% endif %}
+
+                        {% if job.parts_replaced %}
+                            <div style="margin-bottom: 12px; font-size: 13.5px; background: rgba(245,158,11,0.1); padding: 10px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.2);">
+                                <strong style="color: #f59e0b;"><i class="fa-solid fa-microchip"></i> Parts Replaced:</strong> {{ job.parts_replaced }}
+                            </div>
+                        {% endif %}
+
+                        <!-- LATEST REMARKS -->
+                        {% if job.remarks %}
+                            <div style="font-size: 13px; color: var(--text-muted); font-style: italic; margin-bottom: 10px;">
+                                <strong><i class="fa-solid fa-comment-dots"></i> Note:</strong> {{ job.remarks }}
+                            </div>
+                        {% endif %}
+
+                        <!-- CONTACT SUPPORT & WHATSAPP INQUIRY -->
+                        <div class="contact-box">
+                            {% if owner_phone %}
+                                <a href="tel:{{ owner_phone }}" class="btn-call">
+                                    <i class="fa-solid fa-headset"></i> Call Support ({{ owner_phone }})
+                                </a>
+                            {% endif %}
+
+                            {% if owner_whatsapp %}
+                                <a href="https://wa.me/91{{ owner_whatsapp }}?text=Hi,%20I%20am%20inquiring%20about%20my%20PCB%20Repair%20Job%20%23{{ job.id }}" target="_blank" class="btn-whatsapp">
+                                    <i class="fa-brands fa-whatsapp"></i> Inquire on WhatsApp
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-file-circle-xmark"></i>
+                    <p>No repair job found matching "{{ request.args.get('query') }}". Please verify the Job ID or Phone Number.</p>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <p>Enter a valid Job ID or Phone Number to view repair status tracking.</p>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

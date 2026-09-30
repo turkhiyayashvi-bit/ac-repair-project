@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Reports Charts</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+
+<div class="main">
+
+<h1>📊 Reports Analytics</h1>
+
+
+<canvas id="statusChart"></canvas>
+
+<br><br>
+
+<canvas id="pcbChart"></canvas>
+
+<br><br>
+
+<canvas id="techChart"></canvas>
+
+
+
+</div>
+
+
+
+<script>
+
+
+// Status Chart
+
+new Chart(document.getElementById('statusChart'), {
+
+    type:'pie',
+
+    data:{
+
+        labels:[
+            {% for item in status_data %}
+                "{{ item.status }}",
+            {% endfor %}
+        ],
+
+
+        datasets:[{
+
+            data:[
+                {% for item in status_data %}
+                    {{ item.total }},
+                {% endfor %}
+            ]
+
+        }]
+
+    }
+
+});
+
+
+
+// PCB Company Chart
+
+new Chart(document.getElementById('pcbChart'), {
+
+    type:'bar',
+
+    data:{
+
+        labels:[
+            {% for item in pcb_data %}
+                "{{ item.pcb_company }}",
+            {% endfor %}
+        ],
+
+
+        datasets:[{
+
+            label:"PCB Jobs",
+
+            data:[
+                {% for item in pcb_data %}
+                    {{ item.total }},
+                {% endfor %}
+            ]
+
+        }]
+
+    }
+
+});
+
+
+
+// Technician City Chart
+
+new Chart(document.getElementById('techChart'), {
+
+    type:'bar',
+
+    data:{
+
+        labels:[
+            {% for item in technician_data %}
+                "{{ item.city }}",
+            {% endfor %}
+        ],
+
+
+        datasets:[{
+
+            label:"Technicians",
+
+            data:[
+                {% for item in technician_data %}
+                    {{ item.total }},
+                {% endfor %}
+            ]
+
+        }]
+
+    }
+
+});
+
+
+</script>
+
+
+</body>
+</html>

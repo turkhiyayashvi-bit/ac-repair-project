@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCB Models & Error Codes - AC PCB Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --tech-whatsapp: #25d366;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--main-bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        .navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-logo i { color: var(--tech-cyan); }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back:hover { color: var(--text-main); }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; width: 100%; }
+        .page-title { text-align: center; margin-bottom: 25px; }
+        .page-title h2 { font-size: 26px; color: var(--text-main); margin-bottom: 8px; }
+        .page-title p { color: var(--text-muted); font-size: 14px; }
+
+        .search-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .search-card select {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+        }
+
+        .pcb-list { display: flex; flex-direction: column; gap: 20px; }
+
+        .pcb-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            transition: var(--transition);
+        }
+        .pcb-card:hover { border-color: var(--tech-cyan); box-shadow: 0 10px 30px rgba(0, 180, 216, 0.15); }
+
+        .pcb-image-container {
+            width: 120px;
+            height: 120px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .pcb-image-container img { width: 100%; height: 100%; object-fit: cover; }
+
+        .pcb-details { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 280px; }
+
+        .pcb-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+
+        .pcb-company { font-size: 12px; font-weight: 700; color: var(--tech-cyan); text-transform: uppercase; letter-spacing: 0.5px; }
+        .pcb-model-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin-top: 2px; }
+
+        .badge-info {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--tech-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-whatsapp {
+            background: var(--tech-whatsapp);
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+        .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5); }
+
+        .error-codes-box { margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 15px; width: 100%; }
+        .error-codes-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; }
+
+        .error-row {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .error-code-badge {
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--tech-cyan);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/user" class="brand-logo">
+            <i class="fa-solid fa-microchip"></i>
+            <span>AC PCB Service</span>
+        </a>
+        <a href="/user" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Home</a>
+    </nav>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>PCB Models & Error Codes</h2>
+            <p>Select PCB Manufacturer or Model to view error codes & inquire on WhatsApp</p>
+        </div>
+
+        <!-- SEARCH FORM -->
+        <form method="GET" action="/user/pcb_codes" class="search-card">
+            <select name="company_id" onchange="this.form.submit()">
+                <option value="">-- All Brands / Companies --</option>
+                {% for company in pcb_companies %}
+                    <option value="{{ company.id }}" {% if request.args.get('company_id') == company.id|string %}selected{% endif %}>
+                        {{ company.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- PCB MODELS LIST -->
+        <div class="pcb-list">
+            {% if pcb_models %}
+                {% for model in pcb_models %}
+                    <div class="pcb-card">
+                        <div class="pcb-image-container">
+                            <i class="fa-solid fa-microchip" style="font-size: 45px; color: var(--tech-cyan);"></i>
+                        </div>
+
+                        <div class="pcb-details">
+                            <div class="pcb-header">
+                                <div>
+                                    <span class="pcb-company"><i class="fa-solid fa-industry"></i> {{ model.company_name }}</span>
+                                    <!-- Model Number અને PCB Number અહીં ડિસ્પ્લે થશે -->
+                                    <div class="pcb-model-title">
+                                        Model: {{ model.model_number or model.name or 'N/A' }}
+                                    </div>
+                                    {% if model.pcb_number %}
+                                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 3px;">
+                                            PCB No: <strong style="color: var(--text-main);">{{ model.pcb_number }}</strong>
+                                        </div>
+                                    {% endif %}
+                                </div>
+
+                                <a href="https://wa.me/{{ whatsapp_number }}?text=Hi,%20I%20am%20interested%20in%20PCB%20Model%20{{ model.model_number or model.name }}" 
+                                   target="_blank" 
+                                   class="btn-whatsapp">
+                                    <i class="fa-brands fa-whatsapp" style="font-size: 18px;"></i> Contact on WhatsApp
+                                </a>
+                            </div>
+
+                            {% if model.ac_type %}
+                                <div>
+                                    <span class="badge-info">AC Type: {{ model.ac_type }}</span>
+                                </div>
+                            {% endif %}
+
+                            <!-- ASSOCIATED ERROR CODES -->
+                            {% if model.error_codes %}
+                            <div class="error-codes-box">
+                                <div class="error-codes-title"><i class="fa-solid fa-bolt"></i> PCB Fault & Error Codes</div>
+                                {% for err in model.error_codes %}
+                                    <div class="error-row">
+                                        <span class="error-code-badge">{{ err.error_code }}</span>
+                                        <span style="font-size: 13px; font-weight: 600;">{{ err.error_name }}</span>
+                                        <span style="font-size: 12.5px; color: var(--text-muted);">— {{ err.description }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fa-solid fa-microchip" style="font-size: 36px; margin-bottom: 12px; display: block;"></i>
+                    <p>No PCB Models found for the selected company.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

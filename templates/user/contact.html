@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - AC PCB Service</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --main-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --tech-cyan: #00b4d8;
+            --tech-blue: #3b82f6;
+            --tech-whatsapp: #25d366;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition: all 0.3s ease;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--main-bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        .navbar {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-logo i { color: var(--tech-cyan); }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back:hover { color: var(--text-main); }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; width: 100%; }
+        .page-title { text-align: center; margin-bottom: 30px; }
+        .page-title h2 { font-size: 28px; color: var(--text-main); margin-bottom: 8px; }
+        .page-title p { color: var(--text-muted); font-size: 14px; }
+
+        .contact-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        .info-block h3 {
+            font-size: 16px;
+            color: var(--tech-cyan);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-block p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .btn-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .btn-call {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--tech-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .btn-call:hover { background: var(--tech-blue); color: white; }
+
+        .btn-whatsapp {
+            background: var(--tech-whatsapp);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
+        }
+        .btn-whatsapp:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/user" class="brand-logo">
+            <i class="fa-solid fa-microchip"></i>
+            <span>AC PCB Service</span>
+        </a>
+        <a href="/user" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Home</a>
+    </nav>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>Contact & Workshop Location</h2>
+            <p>Get in touch with our expert technical team for AC PCB testing and repair services</p>
+        </div>
+
+        <div class="contact-card">
+            <div class="info-block">
+                <h3><i class="fa-solid fa-shop"></i> Lab & Workshop Address</h3>
+                <p>
+                    <strong style="color: var(--text-main);">{{ contact.shop_name }}</strong><br>
+                    {{ contact.shop_address }}
+                </p>
+            </div>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-clock"></i> Working Hours</h3>
+                <p>
+                    {{ contact.business_hours }}<br>
+                    <small style="color: var(--text-muted);">(Closed on Sundays & Public Holidays)</small>
+                </p>
+            </div>
+
+            <div class="btn-group">
+                <a href="tel:{{ contact.contact_phone }}" class="btn-call">
+                    <i class="fa-solid fa-phone"></i> Call Lab Support ({{ contact.contact_phone }})
+                </a>
+                <a href="https://wa.me/{{ contact.owner_whatsapp_number }}?text=Hi,%20I%20have%20an%20inquiry%20regarding%20AC%20PCB%20repair" target="_blank" class="btn-whatsapp">
+                    <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
